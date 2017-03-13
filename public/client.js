@@ -26,7 +26,7 @@ function setup() {
   background(0);
   textAlign(CENTER);
   fill(255);
-  text("Ciao GJGGJGJGJJGulia", 300, 300);
+  text("Click to connect", 300, 300);
 }
 
 function draw() {

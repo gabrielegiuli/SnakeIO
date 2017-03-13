@@ -152,7 +152,8 @@ function organizeRooms() {
 function checkRooms() {
   for(var i = 0; i < rooms.length; i++) {
     if(rooms[i].player1 && rooms[i].player2 && !rooms[i].game) {
-      rooms[i].game = new Game([rooms[i].player1, rooms[i].player2]);
+      let currentGame = rooms[i].game;
+      rooms[i].game = new Game([rooms[i].player1, rooms[i].player2], checkGames);
       console.log('New game started');
     }
     if((!rooms[i].player1 || !rooms[i].player2) && rooms[i].game) {
@@ -160,6 +161,17 @@ function checkRooms() {
       rooms[i].game = null;
       console.log('Game stopped');
       organizeRooms();
+    }
+  }
+}
+
+function checkGames() {
+  for(var i = 0; i < rooms.length; i++) {
+    if(rooms[i].game != null) {
+      if(!rooms[i].game.active) {
+        rooms[i].game = null;
+        checkRooms();
+      }
     }
   }
 }

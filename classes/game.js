@@ -11,9 +11,36 @@ var Snake = require('./snake');
 var Bullet = require('./bullet');
 
 class Game {
-  constructor(sockets) {
-    this.initialize(sockets);
-    this.startGame();
+  constructor(sockets, callback) {
+    this.active = true;
+    this.callback = callback;
+    this.sockets = sockets;
+    this.snakes = [];
+    this.bullets = [];
+    this.frameSize = { width: 600, height: 600};
+    this.remainingTime = 10;
+    var self = this;
+
+    for(var i = 0; i < this.sockets.length; i++) {
+      this.snakes[i] = new Snake(i*100 + 105, 205);
+      let currentSnake = this.snakes[i];
+      let currentSocket = this.sockets[i];
+      var self = this;
+
+      currentSocket.on('keyPressed', function(data) {
+        if(data == 32 && currentSnake.direction != NONE_CODE) {
+          self.bullets.push(new Bullet(currentSnake.x, currentSnake.y, currentSnake.direction));
+        } else {
+          currentSnake.updateDirection(data);
+        }
+      });
+    }
+
+    this.emit('timeUpdate', this.remainingTime);
+    this.summonTarget();
+    this.loopTimer = setInterval(function() { self.updateSnakes(); }, 100); //100
+    this.bulletsUpdater = setInterval(function() { self.updateBullets(); }, 40);
+    this.timeUpdater = setInterval(function() { self.updateTime(); }, 1000);
   }
 
   updateTime() {
@@ -22,6 +49,11 @@ class Game {
     if(this.remainingTime == 0) {
       this.emit('serverMessage', 'Time is over!');
       this.endGame();
+
+      if(this.callback != null) {
+        this.callback();
+      }
+
       return;
     }
 
@@ -95,6 +127,7 @@ class Game {
     clearInterval(this.bulletsUpdater);
     clearInterval(this.timeUpdater);
     clearInterval(this.loopTimer);
+    this.active = false;
   }
 
   getRandomInt(min, max) {
@@ -103,42 +136,10 @@ class Game {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
-  initialize(sockets) {
-    this.sockets = sockets;
-    this.snakes = [];
-    this.bullets = [];
-    this.frameSize = { width: 600, height: 600};
-    this.remainingTime = 10;
-    var self = this;
-
-    for(var i = 0; i < this.sockets.length; i++) {
-      this.snakes[i] = new Snake(i*100 + 105, 205);
-      let currentSnake = this.snakes[i];
-      let currentSocket = this.sockets[i];
-      var self = this;
-
-      currentSocket.on('keyPressed', function(data) {
-        if(data == 32 && currentSnake.direction != NONE_CODE) {
-          self.bullets.push(new Bullet(currentSnake.x, currentSnake.y, currentSnake.direction));
-        } else {
-          currentSnake.updateDirection(data);
-        }
-      });
-    }
-  }
-
-  startGame() {
-    var self = this;
-
-    this.summonTarget();
-    this.loopTimer = setInterval(function() { self.updateSnakes(); }, 100); //100
-    this.bulletsUpdater = setInterval(function() { self.updateBullets(); }, 40);
-    this.timeUpdater = setInterval(function() { self.updateTime(); }, 1000);
-  }
-
   summonTarget() {
     var rawPosition;
     var ok = true;
+
     do {
       ok = true;
       rawPosition = { x: (this.getRandomInt(0, 60) * 10) + 5, y: (this.getRandomInt(0, 60) * 10) + 5 };
@@ -152,8 +153,6 @@ class Game {
         }
       }
     } while(!ok);
-
-
 
     this.targetPosition = rawPosition;
     console.log('New Target: ' + this.targetPosition.x + " " + this.targetPosition.y);
