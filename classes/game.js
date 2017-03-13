@@ -12,35 +12,19 @@ var Bullet = require('./bullet');
 
 class Game {
   constructor(sockets) {
-    this.sockets = sockets;
-    this.snakes = [];
-    this.bullets = [];
-    this.frameSize = { width: 600, height: 600};
-    this.remainingTime = 180;
-    var self = this;
-
-    for(var i = 0; i < this.sockets.length; i++) {
-      this.snakes[i] = new Snake(i*100 + 105, 205);
-      let currentSnake = this.snakes[i];
-      let currentSocket = this.sockets[i];
-      var self = this;
-
-      currentSocket.on('keyPressed', function(data) {
-        if(data == 32 && currentSnake.direction != NONE_CODE) {
-          self.bullets.push(new Bullet(currentSnake.x, currentSnake.y, currentSnake.direction));
-        } else {
-          currentSnake.updateDirection(data);
-        }
-      });
-    }
-    this.summonTarget();
-    this.loopTimer = setInterval(function() { self.updateSnakes(); }, 100); //100
-    this.bulletsUpdater = setInterval(function() { self.updateBullets(); }, 40);
-    this.timeUpdater = setInterval(function() { self.updateTime(); }, 1000);
+    this.initialize(sockets);
+    this.startGame();
   }
 
   updateTime() {
     this.remainingTime--;
+
+    if(this.remainingTime == 0) {
+      this.emit('serverMessage', 'Time is over!');
+      this.endGame();
+      return;
+    }
+
     this.emit('timeUpdate', this.remainingTime);
   }
 
@@ -117,6 +101,39 @@ class Game {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  initialize(sockets) {
+    this.sockets = sockets;
+    this.snakes = [];
+    this.bullets = [];
+    this.frameSize = { width: 600, height: 600};
+    this.remainingTime = 10;
+    var self = this;
+
+    for(var i = 0; i < this.sockets.length; i++) {
+      this.snakes[i] = new Snake(i*100 + 105, 205);
+      let currentSnake = this.snakes[i];
+      let currentSocket = this.sockets[i];
+      var self = this;
+
+      currentSocket.on('keyPressed', function(data) {
+        if(data == 32 && currentSnake.direction != NONE_CODE) {
+          self.bullets.push(new Bullet(currentSnake.x, currentSnake.y, currentSnake.direction));
+        } else {
+          currentSnake.updateDirection(data);
+        }
+      });
+    }
+  }
+
+  startGame() {
+    var self = this;
+
+    this.summonTarget();
+    this.loopTimer = setInterval(function() { self.updateSnakes(); }, 100); //100
+    this.bulletsUpdater = setInterval(function() { self.updateBullets(); }, 40);
+    this.timeUpdater = setInterval(function() { self.updateTime(); }, 1000);
   }
 
   summonTarget() {
