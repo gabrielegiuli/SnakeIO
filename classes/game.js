@@ -12,17 +12,20 @@ var Bullet = require('./bullet');
 
 class Game {
   constructor(sockets, callback) {
+    this.standbyMode = false;
     this.active = true;
     this.callback = callback;
     this.sockets = sockets;
     this.snakes = [];
     this.bullets = [];
+    this.agreed = [];
     this.frameSize = { width: 600, height: 600};
-    this.remainingTime = 10;
+    this.remainingTime = 30;
     var self = this;
 
     for(var i = 0; i < this.sockets.length; i++) {
       this.snakes[i] = new Snake(i*100 + 105, 205);
+      this.agreed.push(false);
       let currentSnake = this.snakes[i];
       let currentSocket = this.sockets[i];
       var self = this;
@@ -43,16 +46,40 @@ class Game {
     this.timeUpdater = setInterval(function() { self.updateTime(); }, 1000);
   }
 
+  completelyAgreed() {
+    console.log(this.agreed);
+    for(var i = 0; i < this.agreed.length; i++) {
+      if(!this.agreed[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  enterStandbyMode() {
+    for(var i = 0; i < this.sockets.length; i++) {
+      let currentSocket = this.sockets[i];
+      let currentAgreed = this.agreed[i];
+      let index = i;
+      var self = this;
+
+      currentSocket.on('mousePressed', function(data) {
+        self.agreed[index] = true;
+        console.log(index)
+        if(self.callback != null && self.completelyAgreed()) {
+          self.callback();
+        }
+      });
+    }
+  }
+
   updateTime() {
     this.remainingTime--;
 
     if(this.remainingTime == 0) {
       this.emit('serverMessage', 'Time is over!');
+      this.enterStandbyMode();
       this.endGame();
-
-      if(this.callback != null) {
-        this.callback();
-      }
 
       return;
     }

@@ -159,6 +159,12 @@ function checkRooms() {
     if((!rooms[i].player1 || !rooms[i].player2) && rooms[i].game) {
       rooms[i].game.endGame();
       rooms[i].game = null;
+      if(rooms[i].player1 != null) {
+        rooms[i].player1.removeAllListeners();
+      }
+      if(rooms[i].player2 != null) {
+        rooms[i].player2.removeAllListeners();
+      }
       console.log('Game stopped');
       organizeRooms();
     }
@@ -170,6 +176,8 @@ function checkGames() {
     if(rooms[i].game != null) {
       if(!rooms[i].game.active) {
         rooms[i].game = null;
+        rooms[i].player1.removeAllListeners();
+        rooms[i].player2.removeAllListeners();
         checkRooms();
       }
     }

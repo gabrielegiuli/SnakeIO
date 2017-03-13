@@ -69,7 +69,8 @@ function mousePressed() {
       textAlign(CENTER);
       text(data, 300, 300);
     });
-
+  } else {
+    socket.emit('mousePressed', { x: mouseX, y: mouseY });
   }
 }
 
