@@ -1,0 +1,2 @@
+- If the time is over and one of the player clicks to agree to play another game and the other player disconnects,
+  the server does not recognise that the player left
