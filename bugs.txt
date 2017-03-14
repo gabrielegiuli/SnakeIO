@@ -1,2 +1,6 @@
 - If the time is over and one of the player clicks to agree to play another game and the other player disconnects,
-  the server does not recognise that the player left
+  the server does not recognise that the player left. <POSSIBLY SOLVED - SEE NEXT POINT>
+- The listeners for the sockets remain and when the game is reset are added one onto the other one,
+  this causes the program to misbehave in multiple ways, including the ACKs for a new game.
+  A solution has to be found in a method of the socket class that deletes all the listeners
+  a part form the 'disconnect' and 'connect'
