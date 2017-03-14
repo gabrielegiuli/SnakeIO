@@ -184,36 +184,3 @@ function displayBullet(bullet) {
   print(bullet.x + " " + bullet.y + " " + width + " " + height);
   rect(bullet.x, bullet.y, width , height);
 }
-
-/*
-socket.on('update', function(data) {
-  var friend = data.friend;
-  var enemies = data.enemies;
-  var time = parseTime(data.remainingTime);
-  var bullets = data.bullets;
-
-  background(0);
-
-  fill(0, 255, 0);
-  noStroke();
-  displaySnake(friend.positions);
-
-  var enemyScores = [];
-
-  for(var i = 0; i < enemies.length; i++) {
-    fill(255, 0, 0);
-    noStroke();
-    displaySnake(enemies[i].positions);
-    enemyScores.push(enemies[i].score);
-  }
-
-  displayScores(friend.score, enemyScores);
-  displayTarget(data.target);
-
-  for(var i = 0; i < bullets.length; i++) {
-    displayBullet(bullets[i]);
-  }
-
-  printTime(time.minutes, time.seconds);
-});
-*/
