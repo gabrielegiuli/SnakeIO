@@ -151,19 +151,25 @@ function organizeRooms() {
 
 function checkRooms() {
   for(var i = 0; i < rooms.length; i++) {
-    if(rooms[i].player1 && rooms[i].player2 && !rooms[i].game) {
+    if(rooms[i].player1 != null && rooms[i].player2 != null && !rooms[i].game) {
       let currentGame = rooms[i].game;
       rooms[i].game = new Game([rooms[i].player1, rooms[i].player2], checkGames);
       console.log('New game started');
     }
-    if((!rooms[i].player1 || !rooms[i].player2) && rooms[i].game) {
+    if((rooms[i].player1 == null || rooms[i].player2 == null) && rooms[i].game) {
       rooms[i].game.endGame();
       rooms[i].game = null;
       if(rooms[i].player1 != null) {
-        rooms[i].player1.removeAllListeners();
+
+        //ATTENTENTION: The following lines of code does NOT work, find an alternative!
+
+        //rooms[i].player1.removeAllListeners(['keyPressed', 'mousePressed']);
       }
       if(rooms[i].player2 != null) {
-        rooms[i].player2.removeAllListeners();
+
+        //ATTENTENTION: The following lines of code does NOT work, find an alternative!
+
+        //rooms[i].player2.removeAllListeners(['keyPressed', 'mousePressed']);
       }
       console.log('Game stopped');
       organizeRooms();
@@ -175,9 +181,14 @@ function checkGames() {
   for(var i = 0; i < rooms.length; i++) {
     if(rooms[i].game != null) {
       if(!rooms[i].game.active) {
+        console.log("EXECUTED");
+        rooms[i].game.endGame();
         rooms[i].game = null;
-        rooms[i].player1.removeAllListeners();
-        rooms[i].player2.removeAllListeners();
+
+        //ATTENTENTION: The following two lines of code do NOT work, find an alternative!
+
+        //rooms[i].player1.removeAllListeners(['keyPressed', 'mousePressed']);
+        //rooms[i].player2.removeAllListeners(['keyPressed', 'mousePressed']);
         checkRooms();
       }
     }

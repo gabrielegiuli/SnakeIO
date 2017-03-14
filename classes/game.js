@@ -12,7 +12,6 @@ var Bullet = require('./bullet');
 
 class Game {
   constructor(sockets, callback) {
-    this.standbyMode = false;
     this.active = true;
     this.callback = callback;
     this.sockets = sockets;
@@ -57,11 +56,12 @@ class Game {
   }
 
   enterStandbyMode() {
+    this.active = false;
     for(var i = 0; i < this.sockets.length; i++) {
       let currentSocket = this.sockets[i];
       let currentAgreed = this.agreed[i];
       let index = i;
-      var self = this;
+      let self = this;
 
       currentSocket.on('mousePressed', function(data) {
         self.agreed[index] = true;
@@ -77,10 +77,9 @@ class Game {
     this.remainingTime--;
 
     if(this.remainingTime == 0) {
+      this.endGame();
       this.emit('serverMessage', 'Time is over!');
       this.enterStandbyMode();
-      this.endGame();
-
       return;
     }
 
