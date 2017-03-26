@@ -19,7 +19,7 @@ class Game {
     this.bullets = [];
     this.agreed = [];
     this.frameSize = { width: 600, height: 600};
-    this.remainingTime = 5;
+    this.remainingTime = 180;
     var self = this;
 
     for(var i = 0; i < this.sockets.length; i++) {
