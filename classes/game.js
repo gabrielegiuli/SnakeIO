@@ -163,7 +163,8 @@ class Game {
         remainingTime: this.remainingTime,
         bullets: this.bullets,
         ammos: this.ammoPositions,
-        ammoQuantity: this.snakes[i].ammo });
+        ammoQuantity: this.snakes[i].ammo
+      });
     }
   }
 
