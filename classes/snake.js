@@ -19,6 +19,7 @@ class Snake {
     this.firstPart = new Part(x, y);
     this.x = x;
     this.y = y;
+    this.ammo = 0;
     this.direction = NONE_CODE;
     this.score = 0;
   }
@@ -119,6 +120,16 @@ class Snake {
   resetToSingle() {
     this.score -= this.getLength() - 1;
     this.firstPart.removePartAtIndex(1);
+  }
+
+  getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min;
+  }
+
+  addAmmo() {
+    this.ammo += this.getRandomInt(3, 5);
   }
 }
 

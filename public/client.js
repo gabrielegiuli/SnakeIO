@@ -79,7 +79,6 @@ function updateFrame() {
 
   if(rawTime) {
     let time = parseTime(rawTime);
-    print(time.minutes + " Bla " + time.seconds);
     printTime(time.minutes, time.seconds);
   }
 
@@ -106,16 +105,37 @@ function updateFrame() {
 
     displayScores(friend.score, enemyScores);
     displayTarget(snakesData.target);
+    displayAmmo(snakesData.ammos);
+    displayAmmoQuantiy(snakesData.ammoQuantity);
+  }
+}
+
+function displayAmmo(positions) {
+  rectMode(CENTER);
+  fill(255, 255, 255);
+
+  for(var i = 0; i < positions.length; i++) {
+    fill(0, 220, 200);
+    rectMode(CENTER);
+    rect(positions[i].x, positions[i].y, 10, 10);
   }
 }
 
 function displaySnake(positions) {
   let size = 10;
 
+  rectMode(CENTER);
+
   for(var i = 0; i < positions.length; i++) {
-    rectMode(CENTER);
     rect(positions[i].x, positions[i].y, size, size);
   }
+}
+
+function displayAmmoQuantiy(quantity) {
+  textAlign(CENTER);
+  fill(255, 255, 255);
+
+  text(quantity, 100, 100);
 }
 
 function displayScores(friendScore, enemyScores) {
@@ -125,9 +145,10 @@ function displayScores(friendScore, enemyScores) {
 
   var space = frameSize.width/(2*enemyScores.length);
 
+  fill(255, 0, 0);
+  textAlign(CENTER);
+
   for(var i = 0; i < enemyScores.length; i++) {
-    fill(255, 0, 0);
-    textAlign(CENTER);
     text(enemyScores[i], frameSize.width - i*space - 50, 50);
   }
 }

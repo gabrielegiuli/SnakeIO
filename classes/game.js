@@ -3,7 +3,7 @@
 // Simple online game that allows multiple players to play snake together,
 // merging the classic arcade game with the concept of slither.io
 //
-//Gabriele Giuli, All rights reserved
+// Gabriele Giuli, All rights reserved
 
 var NONE_CODE = -1;
 
@@ -18,6 +18,7 @@ class Game {
     this.snakes = [];
     this.bullets = [];
     this.agreed = [];
+    this.ammoPositions = [];
     this.frameSize = { width: 600, height: 600};
     this.remainingTime = 180;
     var self = this;
@@ -30,7 +31,8 @@ class Game {
       var self = this;
 
       currentSocket.on('keyPressed', function(data) {
-        if(data == 32 && currentSnake.direction != NONE_CODE) {
+        if(data == 32 && currentSnake.direction != NONE_CODE && currentSnake.ammo > 0) {
+          currentSnake.ammo --;
           self.bullets.push(new Bullet(currentSnake.x, currentSnake.y, currentSnake.direction));
         } else {
           currentSnake.updateDirection(data);
@@ -43,6 +45,7 @@ class Game {
     this.loopTimer = setInterval(function() { self.updateSnakes(); }, 100); //100
     this.bulletsUpdater = setInterval(function() { self.updateBullets(); }, 40);
     this.timeUpdater = setInterval(function() { self.updateTime(); }, 1000);
+    this.ammoSpawner = setInterval(function() { self.summonAmmo(); }, 10000);
   }
 
   completelyAgreed() {
@@ -123,6 +126,14 @@ class Game {
         this.snakes[i].scored();
         this.summonTarget();
       }
+
+      for(var j = 0; j < this.ammoPositions.length; j++) {
+        if(this.snakes[i].firstPart.x == this.ammoPositions[j].x && this.snakes[i].firstPart.y == this.ammoPositions[j].y) {
+          this.ammoPositions.splice(j, 1);
+          this.snakes[i].addAmmo();
+        }
+      }
+
       var positions = this.snakes[i].getPositions();
       //loop2:
       for(var j = 0; j < positions.length; j++) {
@@ -145,7 +156,14 @@ class Game {
           enemySnakes.push({ positions: this.snakes[j].getPositions(), score: this.snakes[j].score });
         }
       }
-      this.sockets[i].emit('updateSnakes', { friend : friendSnake, enemies: enemySnakes, target: this.targetPosition, remainingTime: this.remainingTime, bullets: this.bullets });
+      this.sockets[i].emit('updateSnakes', {
+        friend : friendSnake,
+        enemies: enemySnakes,
+        target: this.targetPosition,
+        remainingTime: this.remainingTime,
+        bullets: this.bullets,
+        ammos: this.ammoPositions,
+        ammoQuantity: this.snakes[i].ammo });
     }
   }
 
@@ -153,6 +171,7 @@ class Game {
     clearInterval(this.bulletsUpdater);
     clearInterval(this.timeUpdater);
     clearInterval(this.loopTimer);
+    clearInterval(this.ammoSpawner);
     this.active = false;
   }
 
@@ -162,9 +181,45 @@ class Game {
     return Math.floor(Math.random() * (max - min)) + min;
   }
 
+  summonAmmo() {
+    var rawPosition;
+    var ok;
+
+    do {
+      ok = true;
+      rawPosition = { x: (this.getRandomInt(0, 60) * 10) + 5, y: (this.getRandomInt(0, 60) * 10) + 5 };
+
+      for(var i = 0; i < this.snakes.length; i++) {
+        let positions = this.snakes[i].getPositions();
+        for(var j = 0; j < positions.length; j++) {
+          if(positions[j].x == rawPosition.x && positions[j].y == rawPosition.y) {
+            ok = false;
+          }
+        }
+      }
+
+      if(this.targetPosition != null) {
+        if(this.targetPosition.x == rawPosition.x && this.targetPosition.y == rawPosition.y) {
+          ok = false;
+        }
+      }
+
+      for(var i = 0; i < this.ammoPositions.length; i++) {
+        let position = this.ammoPositions[i];
+
+        if(position.x == rawPosition.x && position.y == rawPosition.x) {
+          ok = false;
+        }
+      }
+      console.log('LOOP');
+    } while(!ok);
+
+    this.ammoPositions.push(rawPosition);
+  }
+
   summonTarget() {
     var rawPosition;
-    var ok = true;
+    var ok; //Once was var ok = true; (CHANGE IN CASE OF MISBEHAVIOUR)
 
     do {
       ok = true;
