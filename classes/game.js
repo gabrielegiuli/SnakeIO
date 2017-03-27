@@ -234,6 +234,15 @@ class Game {
           }
         }
       }
+
+      for(var i = 0; i < this.ammoPositions.length; i++) {
+        let position = this.ammoPositions[i];
+
+        if(position.x == rawPosition.x && position.y == rawPosition.x) {
+          ok = false;
+        }
+      }
+      
     } while(!ok);
 
     this.targetPosition = rawPosition;
