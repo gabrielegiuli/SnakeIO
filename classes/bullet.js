@@ -1,3 +1,10 @@
+// Snake.io - bullet.js
+//
+// Simple online game that allows multiple players to play snake together,
+// merging the classic arcade game with the concept of slither.io
+//
+// Gabriele Giuli, All rights reserved
+
 var UP_CODE = 38;
 var DOWN_CODE= 40;
 var LEFT_CODE = 37;
