@@ -13,6 +13,7 @@ var NONE_CODE = -1;
 
 var Part = require('./part');
 var config = require('../config');
+var debugPrint = require('../debug');
 
 class Snake {
   constructor(x, y) {
@@ -42,6 +43,20 @@ class Snake {
         break;
     }
 
+    if(this.x < 5) {
+      this.x = config.window.width - 5;
+    } else if(this.x > config.window.width - 5) {
+      this.x = 5;
+    }
+
+    if(this.y < 5) {
+      this.y = config.window.height - 5;
+    } else if(this.y > config.window.height - 5) {
+      this.y = 5;
+    }
+
+    debugPrint(this.x);
+
     this.firstPart.updatePosition(this.x, this.y);
   }
 
@@ -60,7 +75,7 @@ class Snake {
         this.direction = code;
       }
 
-      console.log('Direction: ' + this.direction);
+      //console.log('Direction: ' + this.direction);
 
     } else if(code == 83 && config.debugMode) { //'s'
       this.scored();

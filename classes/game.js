@@ -224,7 +224,7 @@ class Game {
 
     do {
       ok = true;
-      rawPosition = { x: (this.getRandomInt(0, 60) * 10) + 5, y: (this.getRandomInt(0, 60) * 10) + 5 };
+      rawPosition = { x: (this.getRandomInt(0, 59) * 10) + 5, y: (this.getRandomInt(0, 59) * 10) + 5 };
       //rawPosition = { x: (this.getRandomInt(9, 13) * 10) + 5, y: 205 };
       for(var i = 0; i < this.snakes.length; i++) {
         let positions = this.snakes[i].getPositions();
@@ -242,7 +242,7 @@ class Game {
           ok = false;
         }
       }
-      
+
     } while(!ok);
 
     this.targetPosition = rawPosition;

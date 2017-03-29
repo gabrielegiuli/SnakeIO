@@ -7,4 +7,9 @@
 
 module.exports.port = 5000;
 
-module.exports.debugMode = true;
+module.exports.debugMode = false;
+
+module.exports.window = {
+  width: 600,
+  height: 600
+};
