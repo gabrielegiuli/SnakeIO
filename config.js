@@ -13,3 +13,6 @@ module.exports.window = {
   width: 600,
   height: 600
 };
+
+module.exports.ammoSpawnTime = 20000;
+module.exports.gameTime = 180;

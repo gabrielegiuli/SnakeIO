@@ -9,6 +9,7 @@ var NONE_CODE = -1;
 
 var Snake = require('./snake');
 var Bullet = require('./bullet');
+var config = require('../config');
 
 class Game {
   constructor(sockets, callback) {
@@ -19,8 +20,8 @@ class Game {
     this.bullets = [];
     this.agreed = [];
     this.ammoPositions = [];
-    this.frameSize = { width: 600, height: 600};
-    this.remainingTime = 180;
+    this.frameSize = config.window;
+    this.remainingTime = config.gameTime;
     var self = this;
 
     for(var i = 0; i < this.sockets.length; i++) {
@@ -45,7 +46,7 @@ class Game {
     this.loopTimer = setInterval(function() { self.updateSnakes(); }, 100); //100
     this.bulletsUpdater = setInterval(function() { self.updateBullets(); }, 40);
     this.timeUpdater = setInterval(function() { self.updateTime(); }, 1000);
-    this.ammoSpawner = setInterval(function() { self.summonAmmo(); }, 10000);
+    this.ammoSpawner = setInterval(function() { self.summonAmmo(); }, config.ammoSpawnTime);
   }
 
   completelyAgreed() {
@@ -97,7 +98,7 @@ class Game {
 
   updateBullets() {
     for(var i = 0; i < this.bullets.length; i++) {
-      if(this.bullets[i].x < 0 || this.bullets[i].x > this.frameSize.width || this.bullets[i].y < 0 || this.bullets[i].x > this.frameSize.height) {
+      if(this.bullets[i].x < 0 || this.bullets[i].x > this.frameSize.width || this.bullets[i].y < 0 || this.bullets[i].y > this.frameSize.height) {
         this.bullets.splice(i, 1);
       }
     }
@@ -135,9 +136,18 @@ class Game {
       }
 
       var positions = this.snakes[i].getPositions();
-      //loop2:
+
+      for(var j = 0; j < this.snakes.length; j++) {
+        if(j != i) {
+          for(var k = 0; k < positions.length; k++) {
+            if(this.snakes[j].firstPart.x == positions[k].x && this.snakes[j].firstPart.y == positions[k].y) {
+              this.snakes[j].resetToSingle();
+            }
+          }
+        }
+      }
+
       for(var j = 0; j < positions.length; j++) {
-        //loop3:
         for(var k = 0; k < positions.length; k++) {
           if(j != k) {
             if(positions[j].x == positions[k].x && positions[j].y == positions[k].y) {
