@@ -82,7 +82,36 @@ class Game {
 
     if(this.remainingTime == 0) {
       this.endGame();
-      this.emit('serverMessage', 'Time is over!');
+
+      var max = this.snakes[0].score;
+      var maxIndexes = [];
+
+      for(var i = 1; i < this.snakes.length; i++) {
+        if(this.snakes[i].score > max) {
+          max = this.snakes[i].score;
+        }
+      }
+
+      for(var i = 0; i < this.snakes.length; i++) {
+        if(this.snakes[i].score == max) {
+          maxIndexes.push(i);
+        }
+      }
+
+      console.log(maxIndexes.length);
+
+      if(maxIndexes.length == this.snakes.length) {
+        this.emit('serverMessage', 'It is a draw :|');
+      } else {
+        for(var i = 0; i < this.snakes.length; i++) {
+          if(this.isInArray(maxIndexes, i)) {
+            this.sockets[i].emit('serverMessage', 'You won :)');
+          } else {
+            this.sockets[i].emit('serverMessage', 'You lost :(');
+          }
+        }
+      }
+
       this.enterStandbyMode();
       return;
     }
@@ -94,6 +123,15 @@ class Game {
     for(var i = 0; i < this.sockets.length; i++) {
       this.sockets[i].emit(type, data);
     }
+  }
+
+  isInArray(array, element) {
+    for(var i = 0; i < array.length; i++) {
+      if(array[i] == element) {
+        return true;
+      }
+    }
+    return false;
   }
 
   updateBullets() {
