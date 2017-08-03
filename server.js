@@ -6,7 +6,7 @@
 // Gabriele Giuli, All rights reserved
 
 var http = require('http');
-var fs = require("fs");
+var fs = require('fs');
 var mime = require('mime-types');
 var config = require('./config');
 
