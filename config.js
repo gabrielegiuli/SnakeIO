@@ -16,3 +16,4 @@ module.exports.window = {
 
 module.exports.ammoSpawnTime = 20000;
 module.exports.gameTime = 180;
+module.exports.roomNumber = 2;

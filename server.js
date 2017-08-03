@@ -9,6 +9,7 @@ var http = require('http');
 var fs = require('fs');
 var mime = require('mime-types');
 var config = require('./config');
+var debug = require('./debug');
 
 console.log('Starting server...');
 
@@ -56,13 +57,14 @@ process.openStdin().addListener("data", function(data) {
 
 var Game = require('./classes/game');
 
-var roomsNumber = 2;
 var rooms = [];
 var quedClients = [];
 
-for(var i = 0; i < roomsNumber; i++) {
+for(var i = 0; i < config.roomNumber; i++) {
   rooms[i] = { player1 : null, player2 : null, game: null};
 }
+
+debug("ROOMS:" + rooms.length);
 
 function insertPlayer(socket) {
   for(var i = 0; i < rooms.length; i++) {
